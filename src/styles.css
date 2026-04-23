@@ -1,97 +1,80 @@
-@import "tailwindcss" source(none);
-@source "../src";
-@import "tw-animate-css";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
+/* Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=Inter:wght@200;300;400;500&display=swap");
 
-@custom-variant dark (&:is(.dark *));
+/* ===============================
+   THEME VARIABLES (IMPROVED)
+================================ */
+:root {
+  --radius: 0.25rem;
 
-@theme inline {
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
+  /* Background + text (better contrast) */
+  --background: oklch(0.08 0.005 60);
+  --foreground: oklch(0.985 0.01 85);
 
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-foreground: var(--card-foreground);
-  --color-popover: var(--popover);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-secondary: var(--secondary);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
-  --color-destructive-foreground: var(--destructive-foreground);
-  --color-border: var(--border);
-  --color-input: var(--input);
-  --color-ring: var(--ring);
-  --color-gold: var(--gold);
-  --color-gold-soft: var(--gold-soft);
+  --card: oklch(0.1 0.005 60);
+  --card-foreground: var(--foreground);
 
+  --popover: oklch(0.1 0.005 60);
+  --popover-foreground: var(--foreground);
+
+  --primary: var(--foreground);
+  --primary-foreground: var(--background);
+
+  --secondary: oklch(0.15 0.005 60);
+  --secondary-foreground: var(--foreground);
+
+  --muted: oklch(0.15 0.005 60);
+  --muted-foreground: oklch(0.7 0.02 75);
+
+  --accent: oklch(0.18 0.01 70);
+  --accent-foreground: var(--foreground);
+
+  --border: oklch(0.3 0.01 75 / 70%);
+  --input: oklch(0.3 0.01 75);
+
+  /* PREMIUM GOLD */
+  --gold: oklch(0.82 0.1 80);
+  --gold-soft: oklch(0.82 0.1 80 / 30%);
+
+  /* Shadows */
+  --shadow-elegant: 0 30px 80px -20px oklch(0 0 0 / 60%);
+  --shadow-glow: 0 0 40px -10px oklch(0.82 0.1 80 / 20%);
+
+  /* Glow */
+  --text-glow: 0 0 20px oklch(0.82 0.1 80 / 0.12);
+
+  /* Fonts */
   --font-serif: "Cormorant Garamond", serif;
   --font-sans: "Inter", sans-serif;
 }
 
-:root {
-  --radius: 0.25rem;
-
-  /* Premium dark palette with subtle warm undertone */
-  --background: oklch(0.08 0.005 60);
-  --foreground: oklch(0.97 0.005 80);
-  --card: oklch(0.1 0.005 60);
-  --card-foreground: oklch(0.97 0.005 80);
-  --popover: oklch(0.1 0.005 60);
-  --popover-foreground: oklch(0.97 0.005 80);
-  --primary: oklch(0.97 0.005 80);
-  --primary-foreground: oklch(0.08 0.005 60);
-  --secondary: oklch(0.15 0.005 60);
-  --secondary-foreground: oklch(0.97 0.005 80);
-  --muted: oklch(0.15 0.005 60);
-  --muted-foreground: oklch(0.55 0.01 70);
-  --accent: oklch(0.18 0.01 70);
-  --accent-foreground: oklch(0.97 0.005 80);
-  --destructive: oklch(0.577 0.245 27.325);
-  --destructive-foreground: oklch(0.97 0.005 80);
-  --border: oklch(0.2 0.005 70 / 60%);
-  --input: oklch(0.2 0.005 70);
-  --ring: oklch(0.78 0.08 75);
-
-  /* Signature gold accent */
-  --gold: oklch(0.78 0.08 75);
-  --gold-soft: oklch(0.78 0.08 75 / 30%);
-
-  --gradient-vignette: radial-gradient(ellipse at center, transparent 0%, oklch(0.08 0.005 60) 90%);
-  --gradient-gold: linear-gradient(135deg, oklch(0.85 0.09 80), oklch(0.7 0.08 70));
-  --shadow-elegant: 0 30px 80px -20px oklch(0 0 0 / 60%);
-  --shadow-soft-glow: 0 0 40px -10px oklch(0.78 0.08 75 / 20%);
-}
-
+/* ===============================
+   BASE
+================================ */
 @layer base {
   * {
-    border-color: var(--color-border);
+    border-color: var(--border);
   }
 
   html,
   body {
-    background-color: var(--color-background);
-    color: var(--color-foreground);
+    background: var(--background);
+    color: var(--foreground);
     font-family: var(--font-sans);
     font-weight: 300;
+    letter-spacing: 0.01em;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    letter-spacing: 0.01em;
   }
 
   body {
     background-image:
-      radial-gradient(ellipse 80% 50% at 50% -10%, oklch(0.78 0.08 75 / 6%), transparent),
-      radial-gradient(ellipse 60% 40% at 50% 110%, oklch(0.78 0.08 75 / 4%), transparent);
+      radial-gradient(ellipse 80% 50% at 50% -10%, var(--gold-soft), transparent),
+      radial-gradient(ellipse 60% 40% at 50% 110%, var(--gold-soft), transparent);
     background-attachment: fixed;
   }
 
@@ -100,12 +83,9 @@
     color: var(--foreground);
   }
 
-  /* Custom scrollbar */
+  /* Scrollbar */
   ::-webkit-scrollbar {
     width: 4px;
-  }
-  ::-webkit-scrollbar-track {
-    background: transparent;
   }
   ::-webkit-scrollbar-thumb {
     background: var(--border);
@@ -113,10 +93,14 @@
   }
 }
 
+/* ===============================
+   UTILITIES
+================================ */
 @layer utilities {
   .font-serif {
     font-family: var(--font-serif);
   }
+
   .font-sans {
     font-family: var(--font-sans);
   }
@@ -124,25 +108,34 @@
   .text-gold {
     color: var(--gold);
   }
+
   .bg-gold {
-    background-color: var(--gold);
-  }
-  .border-gold {
-    border-color: var(--gold);
+    background: var(--gold);
+    color: var(--background);
   }
 
-  .tracking-luxe {
-    letter-spacing: 0.4em;
-  }
-  .tracking-refined {
-    letter-spacing: 0.2em;
+  .border-gold {
+    border-color: var(--gold);
   }
 
   .shadow-elegant {
     box-shadow: var(--shadow-elegant);
   }
+
   .shadow-glow {
-    box-shadow: var(--shadow-soft-glow);
+    box-shadow: var(--shadow-glow);
+  }
+
+  .text-glow {
+    text-shadow: var(--text-glow);
+  }
+
+  .tracking-luxe {
+    letter-spacing: 0.4em;
+  }
+
+  .tracking-refined {
+    letter-spacing: 0.2em;
   }
 
   .divider-ornament {
@@ -151,6 +144,7 @@
     gap: 12px;
     color: var(--gold);
   }
+
   .divider-ornament::before,
   .divider-ornament::after {
     content: "";
@@ -159,6 +153,7 @@
     background: linear-gradient(90deg, transparent, var(--gold-soft), transparent);
   }
 
+  /* Animations */
   @keyframes fade-up {
     from {
       opacity: 0;
@@ -169,8 +164,9 @@
       transform: translateY(0);
     }
   }
+
   .animate-fade-up {
-    animation: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: fade-up 0.6s ease forwards;
   }
 
   @keyframes fade-in {
@@ -181,8 +177,9 @@
       opacity: 1;
     }
   }
+
   .animate-fade-in {
-    animation: fade-in 1.2s ease forwards;
+    animation: fade-in 0.8s ease forwards;
   }
 
   @keyframes shimmer-dot {
@@ -197,6 +194,7 @@
       opacity: 1;
     }
   }
+
   .dot-shimmer {
     animation: shimmer-dot 1.4s infinite ease-in-out;
   }

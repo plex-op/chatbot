@@ -196,10 +196,10 @@ export function HakaConsultation() {
         minHeight: "100dvh",
         display: "flex",
         flexDirection: isMobile ? "column" : "row",
-        background: "#0a0906",
+        background: "#0B0A08",
+        color: "#EDE6DA",
         fontFamily: "'Jost', sans-serif",
         fontWeight: 300,
-        color: "#c4c4c4",
         overflow: "hidden",
       }}
     >
@@ -229,7 +229,7 @@ export function HakaConsultation() {
         .spinner {
           width: 12px; height: 12px;
           border: 1px solid #3a3020;
-          border-top-color: #b89c6e;
+          border-top-color: #D4AF6A;
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
           display: inline-block;
@@ -251,13 +251,13 @@ export function HakaConsultation() {
           white-space: nowrap;
         }
         .svc-btn:hover { border-color: #3a3630; color: #888; }
-        .svc-btn.on { border-color: #b89c6e; color: #b89c6e; background: rgba(184,156,110,0.04); }
+        .svc-btn.on { border-color: #D4AF6A; color: #D4AF6A; background: rgba(184,156,110,0.04); }
 
         .confirm-btn {
           background: none;
           border: none;
-          border-bottom: 1px solid #b89c6e;
-          color: #b89c6e;
+          border-bottom: 1px solid #D4AF6A;
+          color: #D4AF6A;
           font-family: 'Jost', sans-serif;
           font-size: 10px;
           font-weight: 300;
@@ -271,7 +271,7 @@ export function HakaConsultation() {
         .confirm-btn:disabled { opacity: 0.18; cursor: default; }
 
         .finish-btn {
-          background: #b89c6e;
+          background: #D4AF6A;
           border: none;
           color: #0a0906;
           font-family: 'Jost', sans-serif;
@@ -296,7 +296,7 @@ export function HakaConsultation() {
           background: transparent;
           border: none;
           outline: none;
-          color: #c8c0b4;
+          color: #F5EFE6;
           font-family: 'Cormorant Garamond', serif;
           font-size: max(16px, 18px);
           font-weight: 300;
@@ -306,12 +306,12 @@ export function HakaConsultation() {
           padding: 0;
           width: 100%;
         }
-        .input-field::placeholder { color: #2a2620; font-style: italic; }
+        .input-field::placeholder { color: #6B5E49; font-style: italic; }
 
         .send-btn {
           background: transparent;
           border: none;
-          color: #2a2620;
+          color: #6B5E49;
           font-family: 'Jost', sans-serif;
           font-size: 9px;
           font-weight: 300;
@@ -322,13 +322,13 @@ export function HakaConsultation() {
           transition: color 0.2s;
           flex-shrink: 0;
         }
-        .send-btn:hover { color: #b89c6e; }
+        .send-btn:hover { color: #D4AF6A; }
 
         .atelier-item {
           font-size: 9px;
           letter-spacing: 3px;
           text-transform: uppercase;
-          color: #2a2620;
+          color: #6B5E49;
           line-height: 2.4;
           transition: color 0.2s;
         }
@@ -360,14 +360,14 @@ export function HakaConsultation() {
                 lineHeight: 1,
               }}
             >
-              Haka<span style={{ color: "#b89c6e" }}>.</span>media
+              Haka<span style={{ color: "#D4AF6A" }}>.</span>media
             </div>
             <div
               style={{
                 fontSize: "8px",
                 letterSpacing: "3px",
                 textTransform: "uppercase",
-                color: "#2a2418",
+                color: "#6B5E49",
                 marginTop: "4px",
               }}
             >
@@ -380,7 +380,7 @@ export function HakaConsultation() {
                 fontSize: "8px",
                 letterSpacing: "2.5px",
                 textTransform: "uppercase",
-                color: "#2a2418",
+                color: "#6B5E49",
                 marginBottom: "3px",
               }}
             >
@@ -434,7 +434,7 @@ export function HakaConsultation() {
               letterSpacing: "1px",
             }}
           >
-            Haka<span style={{ color: "#b89c6e" }}>.</span>media
+            Haka<span style={{ color: "#D4AF6A" }}>.</span>media
           </div>
           <div
             style={{ width: "36px", height: "1px", background: "#2a2418", margin: "18px 0 0" }}
@@ -453,7 +453,7 @@ export function HakaConsultation() {
             >
               "We don't build campaigns.
               <br />
-              We compose <span style={{ color: "#b89c6e" }}>legacies.</span>"
+              We compose <span style={{ color: "#D4AF6A" }}>legacies.</span>"
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: "14px", marginTop: "24px" }}>
               <div style={{ width: "40px", height: "1px", background: "#2a2418" }} />
@@ -462,7 +462,7 @@ export function HakaConsultation() {
                   fontSize: "8px",
                   letterSpacing: "4px",
                   textTransform: "uppercase",
-                  color: "#2a2418",
+                  color: "#6B5E49",
                 }}
               >
                 The House of Haka
@@ -552,7 +552,7 @@ export function HakaConsultation() {
                   fontSize: "9px",
                   letterSpacing: "4px",
                   textTransform: "uppercase",
-                  color: "#b89c6e",
+                  color: "#D4AF6A",
                   marginBottom: "6px",
                 }}
               >
@@ -578,7 +578,7 @@ export function HakaConsultation() {
                   fontSize: "8px",
                   letterSpacing: "3px",
                   textTransform: "uppercase",
-                  color: "#2a2418",
+                  color: "#6B5E49",
                   marginBottom: "5px",
                 }}
               >
@@ -617,7 +617,7 @@ export function HakaConsultation() {
               style={{
                 flex: 1,
                 height: "2px",
-                background: i < stepIndex ? "#2e2820" : i === stepIndex ? "#b89c6e" : "#131008",
+                background: i < stepIndex ? "#2e2820" : i === stepIndex ? "#D4AF6A" : "#131008",
                 transition: "background 0.5s ease",
                 marginBottom: "-1px",
               }}
@@ -659,7 +659,7 @@ export function HakaConsultation() {
                         width: "5px",
                         height: "5px",
                         borderRadius: "50%",
-                        background: "#b89c6e",
+                        background: "#D4AF6A",
                         flexShrink: 0,
                       }}
                     />
@@ -679,7 +679,8 @@ export function HakaConsultation() {
                       fontFamily: "'Cormorant Garamond', serif",
                       fontSize: isMobile ? "24px" : "clamp(22px, 2.4vw, 30px)",
                       fontWeight: 300,
-                      color: "#d0c8bc",
+                      color: "#F5EFE6",
+                      textShadow: "0 0 20px rgba(212,175,106,0.08)",
                       lineHeight: 1.35,
                       maxWidth: isMobile ? "100%" : "500px",
                     }}
@@ -694,7 +695,7 @@ export function HakaConsultation() {
                       fontSize: "8px",
                       letterSpacing: "3.5px",
                       textTransform: "uppercase",
-                      color: "#2a2418",
+                      color: "#6B5E49",
                       marginBottom: "7px",
                     }}
                   >
@@ -706,7 +707,7 @@ export function HakaConsultation() {
                       fontSize: "16px",
                       fontStyle: "italic",
                       fontWeight: 300,
-                      color: "#5a5040",
+                      color: "#B8AD9A",
                       lineHeight: 1.5,
                     }}
                   >
@@ -728,7 +729,7 @@ export function HakaConsultation() {
                     width: "5px",
                     height: "5px",
                     borderRadius: "50%",
-                    background: "#b89c6e",
+                    background: "#D4AF6A",
                   }}
                 />
                 <span
@@ -736,7 +737,7 @@ export function HakaConsultation() {
                     fontSize: "8px",
                     letterSpacing: "3.5px",
                     textTransform: "uppercase",
-                    color: "#3a3020",
+                    color: "#8A7B63",
                   }}
                 >
                   Haka
@@ -840,7 +841,7 @@ export function HakaConsultation() {
                   fontSize: "8px",
                   letterSpacing: "4px",
                   textTransform: "uppercase",
-                  color: "#b89c6e",
+                  color: "#D4AF6A",
                   marginBottom: "20px",
                 }}
               >
@@ -880,7 +881,7 @@ export function HakaConsultation() {
                       fontFamily: "'Cormorant Garamond', serif",
                       fontSize: "15px",
                       fontWeight: 300,
-                      color: "#9a9080",
+                      color: "#D6CFC3",
                       wordBreak: "break-all",
                     }}
                   >

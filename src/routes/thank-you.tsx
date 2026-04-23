@@ -101,8 +101,8 @@ function ThankYouPage() {
           transition: border-color 0.25s ease, color 0.25s ease;
         }
         .back-btn:hover {
-          border-color: #b89c6e;
-          color: #b89c6e;
+          border-color: #D4AF6A;
+          color: #D4AF6A;
         }
 
         .countdown-bar {
@@ -119,7 +119,7 @@ function ThankYouPage() {
             top: 0,
             left: 0,
             height: "100%",
-            background: "#b89c6e",
+            background: "#D4AF6A",
             width: "100%",
           }}
         />
@@ -190,7 +190,7 @@ function ThankYouPage() {
             textTransform: "uppercase",
           }}
         >
-          HAKA<span style={{ color: "#b89c6e", fontStyle: "italic" }}>.</span>media
+          HAKA<span style={{ color: "#D4AF6A", fontStyle: "italic" }}>.</span>media
         </div>
         <div
           style={{
@@ -227,7 +227,7 @@ function ThankYouPage() {
             fontSize: "9px",
             letterSpacing: "4px",
             textTransform: "uppercase",
-            color: "#b89c6e",
+            color: "#D4AF6A",
             marginBottom: "32px",
           }}
         >
@@ -263,7 +263,7 @@ function ThankYouPage() {
             style={{
               fontStyle: "italic",
               fontWeight: 400,
-              color: "#b89c6e",
+              color: "#D4AF6A",
             }}
           >
             {firstName}.
@@ -305,7 +305,7 @@ function ThankYouPage() {
             style={{
               width: "4px",
               height: "4px",
-              background: "#b89c6e",
+              background: "#D4AF6A",
               transform: "rotate(45deg)",
               flexShrink: 0,
             }}
@@ -344,7 +344,7 @@ function ThankYouPage() {
                 style={{
                   fontFamily: "'Cormorant Garamond', serif",
                   fontSize: "11px",
-                  color: "#b89c6e",
+                  color: "#D4AF6A",
                   letterSpacing: "2px",
                   minWidth: "24px",
                   fontWeight: 400,
