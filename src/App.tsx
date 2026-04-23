@@ -1,17 +1,5 @@
+import { HakaConsultation } from "./components/HakaConsultation";
+
 export default function App() {
-  return (
-    <div
-      style={{
-        background: "#000",
-        color: "#fff",
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: "20px",
-      }}
-    >
-      HAKA.media Chatbot is Live 🚀
-    </div>
-  );
+  return <HakaConsultation />;
 }
