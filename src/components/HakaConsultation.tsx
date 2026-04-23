@@ -23,14 +23,17 @@ const SERVICES = [
 ];
 
 const PROMPTS: Record<Exclude<Step, "summary" | "done">, string> = {
-  name: "What is your full name?",
-  phone: "Your phone number?",
-  email: "Your email address?",
-  location: "Where are you based?",
-  services: "Which services are you exploring?",
+  name: "May we begin with your full name?",
+  phone: "Your phone number, please?",
+  email: "And your email address?",
+  location: "Where in the world are you based?",
+  services: "Which of our ateliers interest you?",
 };
 
 const STEP_ORDER: Step[] = ["name", "phone", "email", "location", "services", "summary"];
+
+const ATELIER_LEFT = ["Strategy", "Development", "Performance"];
+const ATELIER_RIGHT = ["Design", "Cinematography", "Storytelling"];
 
 interface Message {
   id: number;
@@ -46,6 +49,7 @@ export function HakaConsultation() {
   const [typing, setTyping] = useState(false);
   const [input, setInput] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
   const [data, setData] = useState<FormData>({
     name: "",
     phone: "",
@@ -58,6 +62,13 @@ export function HakaConsultation() {
   const inputRef = useRef<HTMLInputElement>(null);
   const idRef = useRef(0);
   const didInit = useRef(false);
+
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
 
   const pushBot = (text: string) => {
     setTyping(true);
@@ -76,7 +87,7 @@ export function HakaConsultation() {
   useEffect(() => {
     if (didInit.current) return;
     didInit.current = true;
-    pushBot(PROMPTS.name);
+    setTimeout(() => pushBot(PROMPTS.name), 400);
   }, []);
 
   useEffect(() => {
@@ -84,27 +95,24 @@ export function HakaConsultation() {
   }, [messages, typing]);
 
   useEffect(() => {
-    if (step !== "services" && step !== "summary") inputRef.current?.focus();
+    if (step !== "services" && step !== "summary") {
+      setTimeout(() => inputRef.current?.focus(), 100);
+    }
   }, [step]);
 
   const advance = (value: string) => {
     pushUser(value);
-    if (step === "name") {
-      setData({ ...data, name: value });
-      setStep("phone");
-      pushBot(PROMPTS.phone);
-    } else if (step === "phone") {
-      setData({ ...data, phone: value });
-      setStep("email");
-      pushBot(PROMPTS.email);
-    } else if (step === "email") {
-      setData({ ...data, email: value });
-      setStep("location");
-      pushBot(PROMPTS.location);
-    } else if (step === "location") {
-      setData({ ...data, location: value });
-      setStep("services");
-      pushBot(PROMPTS.services);
+    const next: Partial<Record<Step, Step>> = {
+      name: "phone",
+      phone: "email",
+      email: "location",
+      location: "services",
+    };
+    const nextStep = next[step];
+    if (nextStep) {
+      setData((d) => ({ ...d, [step]: value }));
+      setStep(nextStep);
+      pushBot(PROMPTS[nextStep as Exclude<Step, "summary" | "done">]);
     }
   };
 
@@ -113,7 +121,7 @@ export function HakaConsultation() {
     pushUser(selected.join(" · "));
     setData((d) => ({ ...d, services: selected }));
     setTimeout(() => {
-      pushBot("Here is a summary of your enquiry.");
+      pushBot("A perfect brief. Allow us to present your summary.");
       setStep("summary");
     }, 400);
   };
@@ -124,54 +132,62 @@ export function HakaConsultation() {
   };
 
   const stepIndex = STEP_ORDER.indexOf(step);
-  const progress = (stepIndex / (STEP_ORDER.length - 1)) * 100;
+  const chapterNum = String(stepIndex + 1).padStart(2, "0");
+  const totalNum = String(STEP_ORDER.length).padStart(2, "0");
 
   return (
     <div
-      className="min-h-screen flex flex-col"
       style={{
-        background: "#070707",
-        color: "#c4c4c4",
+        minHeight: "100vh",
+        minHeight: "100dvh",
+        display: "flex",
+        flexDirection: isMobile ? "column" : "row",
+        background: "#0a0906",
         fontFamily: "'Jost', sans-serif",
         fontWeight: 300,
+        color: "#c4c4c4",
+        overflow: "hidden",
       }}
     >
-      {/* Google Fonts */}
       <style>{`
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Jost:wght@300;400;500&display=swap');
-
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Jost:wght@300;400;500&display=swap');
         * { box-sizing: border-box; }
+        .no-scroll::-webkit-scrollbar { display: none; }
+        .no-scroll { scrollbar-width: none; }
 
-        .haka-scrollbar::-webkit-scrollbar { width: 0px; }
+        @keyframes msgRise {
+          from { opacity: 0; transform: translateY(10px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+        .msg-rise { animation: msgRise 0.5s ease forwards; }
 
-        .haka-input::placeholder { color: #2e2e2e; letter-spacing: 0.5px; }
-        .haka-input:focus { outline: none; }
+        @keyframes dotPulse {
+          0%,80%,100% { opacity: 0.25; transform: scale(1); }
+          40%          { opacity: 1; transform: scale(1.4); }
+        }
+        .tdot { animation: dotPulse 1.4s infinite ease-in-out; }
+        .tdot:nth-child(2) { animation-delay: 0.2s; }
+        .tdot:nth-child(3) { animation-delay: 0.4s; }
 
-        .haka-service-btn {
+        .svc-btn {
           background: transparent;
-          border: 1px solid #1e1e1e;
-          color: #606060;
-          padding: 9px 16px;
+          border: 1px solid #1e1b17;
+          color: #4a4640;
+          padding: 8px 12px;
           font-family: 'Jost', sans-serif;
-          font-size: 11px;
+          font-size: 10px;
           font-weight: 300;
           letter-spacing: 2px;
           text-transform: uppercase;
           cursor: pointer;
-          transition: border-color 0.25s ease, color 0.25s ease, background 0.25s ease;
+          transition: all 0.2s ease;
+          white-space: nowrap;
         }
-        .haka-service-btn:hover {
-          border-color: #555;
-          color: #b0b0b0;
-        }
-        .haka-service-btn.active {
-          border-color: #b89c6e;
-          color: #b89c6e;
-          background: rgba(184,156,110,0.05);
-        }
+        .svc-btn:hover { border-color: #3a3630; color: #888; }
+        .svc-btn.on { border-color: #b89c6e; color: #b89c6e; background: rgba(184,156,110,0.04); }
 
-        .haka-confirm-btn {
-          background: transparent;
+        .confirm-btn {
+          background: none;
           border: none;
           border-bottom: 1px solid #b89c6e;
           color: #b89c6e;
@@ -181,503 +197,762 @@ export function HakaConsultation() {
           letter-spacing: 3px;
           text-transform: uppercase;
           cursor: pointer;
-          padding: 4px 0;
-          transition: opacity 0.2s ease;
+          padding: 3px 0;
+          transition: opacity 0.2s;
         }
-        .haka-confirm-btn:hover { opacity: 0.7; }
-        .haka-confirm-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+        .confirm-btn:hover { opacity: 0.65; }
+        .confirm-btn:disabled { opacity: 0.18; cursor: default; }
 
-        .haka-finish-btn {
+        .finish-btn {
           background: #b89c6e;
           border: none;
-          color: #070707;
+          color: #0a0906;
           font-family: 'Jost', sans-serif;
-          font-size: 10px;
+          font-size: 9px;
           font-weight: 400;
+          letter-spacing: 4px;
+          text-transform: uppercase;
+          padding: 14px 0;
+          cursor: pointer;
+          width: 100%;
+          margin-top: 10px;
+          transition: opacity 0.2s;
+        }
+        .finish-btn:hover { opacity: 0.82; }
+
+        .input-field {
+          background: transparent;
+          border: none;
+          outline: none;
+          color: #c8c0b4;
+          font-family: 'Cormorant Garamond', serif;
+          font-size: 18px;
+          font-weight: 300;
+          font-style: italic;
+          letter-spacing: 0.5px;
+          flex: 1;
+          padding: 0;
+          width: 100%;
+          /* Prevent iOS zoom on focus */
+          font-size: max(16px, 18px);
+        }
+        .input-field::placeholder { color: #2a2620; font-style: italic; }
+
+        .send-btn {
+          background: transparent;
+          border: none;
+          color: #2a2620;
+          font-family: 'Jost', sans-serif;
+          font-size: 9px;
+          font-weight: 300;
+          letter-spacing: 3.5px;
+          text-transform: uppercase;
+          cursor: pointer;
+          padding: 0;
+          transition: color 0.2s;
+          flex-shrink: 0;
+        }
+        .send-btn:hover { color: #b89c6e; }
+
+        .atelier-item {
+          font-size: 9px;
           letter-spacing: 3px;
           text-transform: uppercase;
-          padding: 14px 32px;
-          cursor: pointer;
-          transition: opacity 0.2s ease;
-          width: 100%;
-          margin-top: 8px;
+          color: #2a2620;
+          line-height: 2.4;
+          transition: color 0.2s;
         }
-        .haka-finish-btn:hover { opacity: 0.85; }
-
-        @keyframes msgRise {
-          from { opacity: 0; transform: translateY(8px); }
-          to   { opacity: 1; transform: translateY(0); }
-        }
-        .haka-msg { animation: msgRise 0.45s ease forwards; }
-
-        @keyframes dotPulse {
-          0%,80%,100% { transform: scale(1); opacity: 0.3; }
-          40%          { transform: scale(1.5); opacity: 1; }
-        }
-        .typing-dot { animation: dotPulse 1.4s infinite ease-in-out; }
-        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
-        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+        .atelier-item:hover { color: #5a5040; }
       `}</style>
 
-      {/* ── PROGRESS STRIP ── */}
-      <div style={{ height: "1px", background: "#111", position: "relative" }}>
+      {/* ═══════════════════════════════════════
+          LEFT PANEL
+          Desktop: fixed 38% column
+          Mobile: compact top header bar
+      ═══════════════════════════════════════ */}
+      {isMobile ? (
+        /* ── MOBILE TOP HEADER ── */
         <div
           style={{
-            position: "absolute",
-            top: 0,
-            left: 0,
-            height: "100%",
-            width: `${progress}%`,
-            background: "#b89c6e",
-            transition: "width 0.6s cubic-bezier(0.4,0,0.2,1)",
+            borderBottom: "1px solid #131008",
+            padding: "20px 24px 16px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            flexShrink: 0,
           }}
-        />
-      </div>
-
-      {/* ── HEADER ── */}
-      <header
-        style={{
-          borderBottom: "1px solid #131313",
-          padding: "28px 40px 24px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "flex-end",
-        }}
-      >
-        {/* Logo */}
-        <div>
-          <div
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "26px",
-              fontWeight: 400,
-              color: "#f2ede6",
-              letterSpacing: "6px",
-              textTransform: "uppercase",
-              lineHeight: 1,
-            }}
-          >
-            HAKA<span style={{ color: "#b89c6e", fontStyle: "italic" }}>.</span>media
-          </div>
-          <div
-            style={{
-              marginTop: "6px",
-              fontSize: "9px",
-              letterSpacing: "3.5px",
-              textTransform: "uppercase",
-              color: "#333",
-              fontWeight: 300,
-            }}
-          >
-            Filling the Digital Gap
-          </div>
-        </div>
-
-        {/* Step counter */}
-        <div style={{ textAlign: "right" }}>
-          <div
-            style={{
-              fontSize: "9px",
-              letterSpacing: "2.5px",
-              textTransform: "uppercase",
-              color: "#333",
-              marginBottom: "4px",
-            }}
-          >
-            Step
-          </div>
-          <div
-            style={{
-              fontFamily: "'Cormorant Garamond', serif",
-              fontSize: "22px",
-              fontWeight: 300,
-              color: "#666",
-            }}
-          >
-            {stepIndex + 1}
-            <span style={{ fontSize: "14px", color: "#2e2e2e", margin: "0 4px" }}>/</span>
-            <span style={{ fontSize: "14px", color: "#2e2e2e" }}>{STEP_ORDER.length}</span>
-          </div>
-        </div>
-      </header>
-
-      {/* Step pip row */}
-      <div
-        style={{
-          display: "flex",
-          gap: "4px",
-          padding: "0 40px",
-          borderBottom: "1px solid #0e0e0e",
-        }}
-      >
-        {STEP_ORDER.map((s, i) => (
-          <div
-            key={s}
-            style={{
-              flex: 1,
-              height: "2px",
-              background: i < stepIndex ? "#3a3a3a" : i === stepIndex ? "#b89c6e" : "#141414",
-              transition: "background 0.4s ease",
-              marginBottom: "-1px",
-            }}
-          />
-        ))}
-      </div>
-
-      {/* ── CHAT AREA ── */}
-      <div
-        ref={chatRef}
-        className="haka-scrollbar"
-        style={{
-          flex: 1,
-          overflowY: "auto",
-          padding: "40px 40px 24px",
-          display: "flex",
-          flexDirection: "column",
-          gap: "24px",
-          minHeight: "360px",
-        }}
-      >
-        {messages.map((m) => (
-          <div
-            key={m.id}
-            className="haka-msg"
-            style={{ textAlign: m.type === "user" ? "right" : "left" }}
-          >
-            {m.type === "bot" ? (
-              <>
-                <div
-                  style={{
-                    fontSize: "9px",
-                    letterSpacing: "3px",
-                    textTransform: "uppercase",
-                    color: "#333",
-                    marginBottom: "8px",
-                  }}
-                >
-                  HAKA.media
-                </div>
-                <p
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "22px",
-                    fontWeight: 300,
-                    color: "#d8d0c4",
-                    lineHeight: 1.45,
-                    maxWidth: "480px",
-                  }}
-                >
-                  {m.text}
-                </p>
-              </>
-            ) : (
-              <>
-                <div
-                  style={{
-                    fontSize: "9px",
-                    letterSpacing: "3px",
-                    textTransform: "uppercase",
-                    color: "#333",
-                    marginBottom: "8px",
-                  }}
-                >
-                  You
-                </div>
-                <p
-                  style={{
-                    fontSize: "14px",
-                    fontWeight: 300,
-                    color: "#888",
-                    letterSpacing: "0.3px",
-                    lineHeight: 1.6,
-                  }}
-                >
-                  {m.text}
-                </p>
-              </>
-            )}
-          </div>
-        ))}
-
-        {/* Typing indicator */}
-        {typing && (
-          <div className="haka-msg">
+        >
+          {/* Wordmark */}
+          <div>
             <div
               style={{
-                fontSize: "9px",
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "24px",
+                fontWeight: 400,
+                color: "#ede5d8",
+                letterSpacing: "1px",
+                lineHeight: 1,
+              }}
+            >
+              Haka<span style={{ color: "#b89c6e" }}>.</span>media
+            </div>
+            <div
+              style={{
+                fontSize: "8px",
                 letterSpacing: "3px",
                 textTransform: "uppercase",
-                color: "#333",
-                marginBottom: "10px",
+                color: "#2a2418",
+                marginTop: "4px",
               }}
             >
-              HAKA.media
-            </div>
-            <div style={{ display: "flex", gap: "6px", alignItems: "center", paddingTop: "4px" }}>
-              {[0, 1, 2].map((i) => (
-                <div
-                  key={i}
-                  className="typing-dot"
-                  style={{
-                    width: "4px",
-                    height: "4px",
-                    background: "#444",
-                    borderRadius: "50%",
-                    animationDelay: `${i * 0.2}s`,
-                  }}
-                />
-              ))}
+              Private Consultation
             </div>
           </div>
-        )}
 
-        {/* ── SERVICE SELECTOR ── */}
-        {step === "services" && (
-          <div
-            className="haka-msg"
-            style={{ display: "flex", flexDirection: "column", gap: "20px" }}
-          >
-            <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
-              {SERVICES.map((s) => (
-                <button
-                  key={s}
-                  className={`haka-service-btn${selected.includes(s) ? " active" : ""}`}
-                  onClick={() =>
-                    setSelected((prev) =>
-                      prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s],
-                    )
-                  }
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-            <button
-              className="haka-confirm-btn"
-              style={{ alignSelf: "flex-start" }}
-              onClick={confirmServices}
-              disabled={!selected.length}
-            >
-              Confirm Selection &rarr;
-            </button>
-          </div>
-        )}
-
-        {/* ── SUMMARY ── */}
-        {step === "summary" && (
-          <div
-            className="haka-msg"
-            style={{
-              border: "1px solid #191919",
-              padding: "28px 32px",
-              maxWidth: "480px",
-            }}
-          >
-            {/* Corner accents */}
-            <div style={{ position: "relative" }}>
-              <div
-                style={{
-                  position: "absolute",
-                  top: -28,
-                  left: -32,
-                  width: 16,
-                  height: 16,
-                  borderTop: "1px solid #3a3a3a",
-                  borderLeft: "1px solid #3a3a3a",
-                }}
-              />
-              <div
-                style={{
-                  position: "absolute",
-                  top: -28,
-                  right: -32,
-                  width: 16,
-                  height: 16,
-                  borderTop: "1px solid #3a3a3a",
-                  borderRight: "1px solid #3a3a3a",
-                }}
-              />
-            </div>
-
+          {/* Chapter counter */}
+          <div style={{ textAlign: "right" }}>
             <div
               style={{
-                fontSize: "9px",
-                letterSpacing: "3.5px",
+                fontSize: "8px",
+                letterSpacing: "2.5px",
                 textTransform: "uppercase",
-                color: "#b89c6e",
-                marginBottom: "22px",
+                color: "#2a2418",
+                marginBottom: "3px",
               }}
             >
-              Enquiry Summary
+              Chapter
             </div>
+            <div
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "22px",
+                fontWeight: 300,
+                color: "#4a4030",
+                lineHeight: 1,
+              }}
+            >
+              {chapterNum}
+              <span style={{ fontSize: "13px", color: "#2a2018", margin: "0 4px" }}>/</span>
+              <span style={{ fontSize: "13px", color: "#2a2018" }}>{totalNum}</span>
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* ── DESKTOP LEFT PANEL ── */
+        <div
+          style={{
+            width: "38%",
+            minHeight: "100vh",
+            borderRight: "1px solid #131008",
+            display: "flex",
+            flexDirection: "column",
+            padding: "36px 40px",
+            flexShrink: 0,
+          }}
+        >
+          <div
+            style={{
+              fontSize: "9px",
+              letterSpacing: "4px",
+              textTransform: "uppercase",
+              color: "#3a3428",
+              marginBottom: "10px",
+            }}
+          >
+            Maison
+          </div>
+          <div
+            style={{
+              fontFamily: "'Cormorant Garamond', serif",
+              fontSize: "clamp(32px, 3.5vw, 48px)",
+              fontWeight: 400,
+              color: "#ede5d8",
+              lineHeight: 1.05,
+              letterSpacing: "1px",
+            }}
+          >
+            Haka<span style={{ color: "#b89c6e" }}>.</span>media
+          </div>
+          <div
+            style={{ width: "36px", height: "1px", background: "#2a2418", margin: "18px 0 0" }}
+          />
 
-            {[
-              { label: "Name", value: data.name },
-              { label: "Phone", value: data.phone },
-              { label: "Email", value: data.email },
-              { label: "Location", value: data.location },
-            ].map(({ label, value }) => (
+          <div style={{ marginTop: "auto", paddingBottom: "28px" }}>
+            <p
+              style={{
+                fontFamily: "'Cormorant Garamond', serif",
+                fontSize: "clamp(20px, 2vw, 26px)",
+                fontWeight: 300,
+                fontStyle: "italic",
+                color: "#6a6050",
+                lineHeight: 1.45,
+                maxWidth: "300px",
+              }}
+            >
+              "We don't build campaigns.
+              <br />
+              We compose <span style={{ color: "#b89c6e" }}>legacies.</span>"
+            </p>
+            <div style={{ display: "flex", alignItems: "center", gap: "14px", marginTop: "24px" }}>
+              <div style={{ width: "40px", height: "1px", background: "#2a2418" }} />
+              <span
+                style={{
+                  fontSize: "8px",
+                  letterSpacing: "4px",
+                  textTransform: "uppercase",
+                  color: "#2a2418",
+                }}
+              >
+                The House of Haka
+              </span>
+            </div>
+          </div>
+
+          <div style={{ borderTop: "1px solid #131008", paddingTop: "22px" }}>
+            <div
+              style={{
+                fontSize: "8px",
+                letterSpacing: "4px",
+                textTransform: "uppercase",
+                color: "#1e1a14",
+                marginBottom: "14px",
+                textAlign: "center",
+              }}
+            >
+              Atelier
+            </div>
+            <div style={{ display: "flex" }}>
+              <div style={{ flex: 1 }}>
+                {ATELIER_LEFT.map((a) => (
+                  <div key={a} className="atelier-item">
+                    {a}
+                  </div>
+                ))}
+              </div>
+              <div style={{ flex: 1 }}>
+                {ATELIER_RIGHT.map((a) => (
+                  <div key={a} className="atelier-item">
+                    {a}
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginTop: "20px",
+              paddingTop: "14px",
+              borderTop: "1px solid #131008",
+            }}
+          >
+            <span
+              style={{
+                fontSize: "8px",
+                letterSpacing: "2.5px",
+                textTransform: "uppercase",
+                color: "#1a1610",
+              }}
+            >
+              Established Excellence
+            </span>
+            <span style={{ fontSize: "8px", letterSpacing: "2px", color: "#1a1610" }}>MMXXIV</span>
+          </div>
+        </div>
+      )}
+
+      {/* ═══════════════════════════════════════
+          RIGHT PANEL — conversation
+      ═══════════════════════════════════════ */}
+      <div
+        style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          minHeight: isMobile ? 0 : "100vh",
+          overflow: isMobile ? "hidden" : undefined,
+        }}
+      >
+        {/* Desktop right header (hidden on mobile — merged into top bar above) */}
+        {!isMobile && (
+          <>
+            <div
+              style={{
+                borderBottom: "1px solid #131008",
+                padding: "36px 48px 28px",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "flex-start",
+              }}
+            >
+              <div>
+                <div
+                  style={{
+                    fontSize: "9px",
+                    letterSpacing: "4px",
+                    textTransform: "uppercase",
+                    color: "#b89c6e",
+                    marginBottom: "6px",
+                  }}
+                >
+                  Private Consultation
+                </div>
+                <div
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "13px",
+                    fontStyle: "italic",
+                    color: "#3a3020",
+                  }}
+                >
+                  By invitation · In confidence
+                </div>
+                <div
+                  style={{ width: "40px", height: "1px", background: "#1a1610", marginTop: "14px" }}
+                />
+              </div>
+              <div style={{ textAlign: "right" }}>
+                <div
+                  style={{
+                    fontSize: "8px",
+                    letterSpacing: "3px",
+                    textTransform: "uppercase",
+                    color: "#2a2418",
+                    marginBottom: "5px",
+                  }}
+                >
+                  Chapter
+                </div>
+                <div
+                  style={{
+                    fontFamily: "'Cormorant Garamond', serif",
+                    fontSize: "30px",
+                    fontWeight: 300,
+                    color: "#4a4030",
+                    lineHeight: 1,
+                  }}
+                >
+                  {chapterNum}
+                  <span style={{ fontSize: "16px", color: "#2a2018", margin: "0 6px" }}>/</span>
+                  <span style={{ fontSize: "16px", color: "#2a2018" }}>{totalNum}</span>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+
+        {/* Step pips */}
+        <div
+          style={{
+            display: "flex",
+            padding: isMobile ? "0 24px" : "0 48px",
+            gap: "3px",
+            borderBottom: "1px solid #0e0c08",
+            flexShrink: 0,
+          }}
+        >
+          {STEP_ORDER.map((s, i) => (
+            <div
+              key={s}
+              style={{
+                flex: 1,
+                height: "2px",
+                background: i < stepIndex ? "#2e2820" : i === stepIndex ? "#b89c6e" : "#131008",
+                transition: "background 0.5s ease",
+                marginBottom: "-1px",
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Chat scroll area */}
+        <div
+          ref={chatRef}
+          className="no-scroll"
+          style={{
+            flex: 1,
+            overflowY: "auto",
+            padding: isMobile ? "28px 24px 16px" : "44px 48px 24px",
+            display: "flex",
+            flexDirection: "column",
+            gap: isMobile ? "24px" : "32px",
+          }}
+        >
+          {messages.map((m) => (
+            <div
+              key={m.id}
+              className="msg-rise"
+              style={{ textAlign: m.type === "user" ? "right" : "left" }}
+            >
+              {m.type === "bot" ? (
+                <div>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "8px",
+                      marginBottom: "10px",
+                    }}
+                  >
+                    <div
+                      style={{
+                        width: "5px",
+                        height: "5px",
+                        borderRadius: "50%",
+                        background: "#b89c6e",
+                        flexShrink: 0,
+                      }}
+                    />
+                    <span
+                      style={{
+                        fontSize: "8px",
+                        letterSpacing: "3.5px",
+                        textTransform: "uppercase",
+                        color: "#3a3020",
+                      }}
+                    >
+                      Haka
+                    </span>
+                  </div>
+                  <p
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: isMobile ? "24px" : "clamp(22px, 2.4vw, 30px)",
+                      fontWeight: 300,
+                      color: "#d0c8bc",
+                      lineHeight: 1.35,
+                      maxWidth: isMobile ? "100%" : "500px",
+                    }}
+                  >
+                    {m.text}
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <div
+                    style={{
+                      fontSize: "8px",
+                      letterSpacing: "3.5px",
+                      textTransform: "uppercase",
+                      color: "#2a2418",
+                      marginBottom: "7px",
+                    }}
+                  >
+                    You
+                  </div>
+                  <p
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: "16px",
+                      fontStyle: "italic",
+                      fontWeight: 300,
+                      color: "#5a5040",
+                      lineHeight: 1.5,
+                    }}
+                  >
+                    {m.text}
+                  </p>
+                </div>
+              )}
+            </div>
+          ))}
+
+          {/* Typing indicator */}
+          {typing && (
+            <div className="msg-rise">
               <div
-                key={label}
+                style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "12px" }}
+              >
+                <div
+                  style={{
+                    width: "5px",
+                    height: "5px",
+                    borderRadius: "50%",
+                    background: "#b89c6e",
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: "8px",
+                    letterSpacing: "3.5px",
+                    textTransform: "uppercase",
+                    color: "#3a3020",
+                  }}
+                >
+                  Haka
+                </span>
+              </div>
+              <div style={{ display: "flex", gap: "7px", alignItems: "center" }}>
+                {[0, 1, 2].map((i) => (
+                  <div
+                    key={i}
+                    className="tdot"
+                    style={{
+                      width: "4px",
+                      height: "4px",
+                      borderRadius: "50%",
+                      background: "#3a3020",
+                      animationDelay: `${i * 0.2}s`,
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Service selector */}
+          {step === "services" && (
+            <div
+              className="msg-rise"
+              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            >
+              <div style={{ display: "flex", flexWrap: "wrap", gap: "8px" }}>
+                {SERVICES.map((s) => (
+                  <button
+                    key={s}
+                    className={`svc-btn${selected.includes(s) ? " on" : ""}`}
+                    onClick={() =>
+                      setSelected((prev) =>
+                        prev.includes(s) ? prev.filter((x) => x !== s) : [...prev, s],
+                      )
+                    }
+                  >
+                    {s}
+                  </button>
+                ))}
+              </div>
+              <button
+                className="confirm-btn"
+                onClick={confirmServices}
+                disabled={!selected.length}
+                style={{ alignSelf: "flex-start" }}
+              >
+                Confirm Selection &rarr;
+              </button>
+            </div>
+          )}
+
+          {/* Summary */}
+          {step === "summary" && (
+            <div
+              className="msg-rise"
+              style={{
+                border: "1px solid #181410",
+                padding: isMobile ? "22px 20px" : "28px 32px",
+                maxWidth: isMobile ? "100%" : "460px",
+                position: "relative",
+              }}
+            >
+              {/* Corner brackets */}
+              {(
+                [
+                  {
+                    top: -1,
+                    left: -1,
+                    borderTop: "1px solid #3a3020",
+                    borderLeft: "1px solid #3a3020",
+                  },
+                  {
+                    top: -1,
+                    right: -1,
+                    borderTop: "1px solid #3a3020",
+                    borderRight: "1px solid #3a3020",
+                  },
+                  {
+                    bottom: -1,
+                    left: -1,
+                    borderBottom: "1px solid #3a3020",
+                    borderLeft: "1px solid #3a3020",
+                  },
+                  {
+                    bottom: -1,
+                    right: -1,
+                    borderBottom: "1px solid #3a3020",
+                    borderRight: "1px solid #3a3020",
+                  },
+                ] as React.CSSProperties[]
+              ).map((s, i) => (
+                <div key={i} style={{ position: "absolute", width: 14, height: 14, ...s }} />
+              ))}
+
+              <div
+                style={{
+                  fontSize: "8px",
+                  letterSpacing: "4px",
+                  textTransform: "uppercase",
+                  color: "#b89c6e",
+                  marginBottom: "20px",
+                }}
+              >
+                Enquiry Summary
+              </div>
+
+              {[
+                { label: "Name", value: data.name },
+                { label: "Phone", value: data.phone },
+                { label: "Email", value: data.email },
+                { label: "Location", value: data.location },
+              ].map(({ label, value }) => (
+                <div
+                  key={label}
+                  style={{
+                    display: "flex",
+                    alignItems: "baseline",
+                    gap: "12px",
+                    padding: "9px 0",
+                    borderBottom: "1px solid #0e0c08",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: "8px",
+                      letterSpacing: "2.5px",
+                      textTransform: "uppercase",
+                      color: "#2e2820",
+                      minWidth: "58px",
+                      flexShrink: 0,
+                    }}
+                  >
+                    {label}
+                  </span>
+                  <span
+                    style={{
+                      fontFamily: "'Cormorant Garamond', serif",
+                      fontSize: "15px",
+                      fontWeight: 300,
+                      color: "#9a9080",
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {value}
+                  </span>
+                </div>
+              ))}
+
+              <div style={{ padding: "10px 0", borderBottom: "1px solid #0e0c08" }}>
+                <div
+                  style={{
+                    fontSize: "8px",
+                    letterSpacing: "2.5px",
+                    textTransform: "uppercase",
+                    color: "#2e2820",
+                    marginBottom: "10px",
+                  }}
+                >
+                  Services
+                </div>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+                  {data.services.map((s) => (
+                    <span
+                      key={s}
+                      style={{
+                        border: "1px solid #1e1a14",
+                        color: "#4a4030",
+                        fontSize: "8px",
+                        letterSpacing: "2px",
+                        textTransform: "uppercase",
+                        padding: "4px 10px",
+                      }}
+                    >
+                      {s}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              <button className="finish-btn" onClick={finish}>
+                Confirm &amp; Connect
+              </button>
+            </div>
+          )}
+
+          {/* Bottom padding so last message isn't hidden by input bar */}
+          <div style={{ height: "8px", flexShrink: 0 }} />
+        </div>
+
+        {/* Input bar */}
+        {step !== "services" && step !== "summary" && (
+          <div
+            style={{
+              borderTop: "1px solid #0e0c08",
+              padding: isMobile ? "0 24px" : "0 48px",
+              flexShrink: 0,
+              background: "#0a0906",
+            }}
+          >
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (!input.trim()) return;
+                advance(input);
+                setInput("");
+              }}
+            >
+              <div
                 style={{
                   display: "flex",
-                  alignItems: "baseline",
+                  alignItems: "center",
                   gap: "16px",
-                  padding: "10px 0",
-                  borderBottom: "1px solid #111",
+                  padding: "18px 0 16px",
+                  borderBottom: "1px solid #131008",
                 }}
               >
                 <span
                   style={{
-                    fontSize: "9px",
-                    letterSpacing: "2.5px",
-                    textTransform: "uppercase",
-                    color: "#333",
-                    minWidth: "68px",
+                    color: "#2e2820",
+                    fontSize: "16px",
+                    fontFamily: "'Cormorant Garamond', serif",
+                    flexShrink: 0,
+                    lineHeight: 1,
                   }}
                 >
-                  {label}
+                  ›
                 </span>
-                <span style={{ fontSize: "14px", color: "#aaa", fontWeight: 300 }}>{value}</span>
+                <input
+                  ref={inputRef}
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  placeholder="Compose your reply..."
+                  className="input-field"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="off"
+                  spellCheck={false}
+                />
+                <button type="submit" className="send-btn">
+                  Send &rarr;
+                </button>
               </div>
-            ))}
-
-            <div style={{ padding: "10px 0", borderBottom: "1px solid #111" }}>
-              <div
-                style={{
-                  fontSize: "9px",
-                  letterSpacing: "2.5px",
-                  textTransform: "uppercase",
-                  color: "#333",
-                  marginBottom: "10px",
-                }}
-              >
-                Services
-              </div>
-              <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
-                {data.services.map((s) => (
+              {!isMobile && (
+                <div style={{ padding: "8px 0 12px" }}>
                   <span
-                    key={s}
                     style={{
-                      border: "1px solid #222",
-                      color: "#666",
-                      fontSize: "9.5px",
-                      letterSpacing: "1.5px",
+                      fontSize: "8px",
+                      letterSpacing: "3px",
                       textTransform: "uppercase",
-                      padding: "4px 10px",
+                      color: "#1a1610",
                     }}
                   >
-                    {s}
+                    Press Enter to Continue
                   </span>
-                ))}
-              </div>
-            </div>
-
-            <button className="haka-finish-btn" onClick={finish}>
-              Confirm &amp; Connect
-            </button>
+                </div>
+              )}
+            </form>
           </div>
         )}
-      </div>
 
-      {/* ── INPUT BAR ── */}
-      {step !== "services" && step !== "summary" && (
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            if (!input.trim()) return;
-            advance(input);
-            setInput("");
-          }}
-          style={{
-            borderTop: "1px solid #111",
-            padding: "18px 40px 24px",
-            background: "#070707",
-          }}
-        >
+        {/* Mobile bottom safe area */}
+        {isMobile && (
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 0,
-              borderBottom: "1px solid #1e1e1e",
-              transition: "border-color 0.2s ease",
+              height: "env(safe-area-inset-bottom, 0px)",
+              background: "#0a0906",
+              flexShrink: 0,
             }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = "#3a3a3a")}
-            onBlur={(e) => (e.currentTarget.style.borderColor = "#1e1e1e")}
-          >
-            <input
-              ref={inputRef}
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your reply..."
-              className="haka-input"
-              style={{
-                flex: 1,
-                background: "transparent",
-                border: "none",
-                color: "#d0d0d0",
-                fontFamily: "'Jost', sans-serif",
-                fontSize: "14px",
-                fontWeight: 300,
-                letterSpacing: "0.3px",
-                padding: "12px 0",
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                background: "transparent",
-                border: "none",
-                cursor: "pointer",
-                padding: "8px 0 8px 16px",
-                color: "#333",
-                fontSize: "10px",
-                letterSpacing: "2.5px",
-                textTransform: "uppercase",
-                fontFamily: "'Jost', sans-serif",
-                fontWeight: 300,
-                transition: "color 0.2s ease",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#b89c6e")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#333")}
-            >
-              Send &rarr;
-            </button>
-          </div>
-        </form>
-      )}
-
-      {/* ── FOOTER ── */}
-      <div
-        style={{
-          borderTop: "1px solid #0e0e0e",
-          padding: "10px 40px 14px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-        }}
-      >
-        <span
-          style={{
-            fontSize: "9px",
-            letterSpacing: "2.5px",
-            textTransform: "uppercase",
-            color: "#1e1e1e",
-          }}
-        >
-          Confidential · Strategy Consultation
-        </span>
-        <span
-          style={{
-            fontFamily: "'Cormorant Garamond', serif",
-            fontStyle: "italic",
-            fontSize: "11px",
-            color: "#1e1e1e",
-          }}
-        >
-          haka.media
-        </span>
+          />
+        )}
       </div>
     </div>
   );
