@@ -2,6 +2,7 @@ import { Outlet, Link, createRootRoute, HeadContent, Scripts } from "@tanstack/r
 
 import appCss from "../styles.css?url";
 
+/* ---------- 404 PAGE ---------- */
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -11,6 +12,7 @@ function NotFoundComponent() {
         <p className="mt-2 text-sm text-muted-foreground">
           The page you're looking for doesn't exist or has been moved.
         </p>
+
         <div className="mt-6">
           <Link
             to="/"
@@ -24,23 +26,26 @@ function NotFoundComponent() {
   );
 }
 
+/* ---------- ROOT ROUTE ---------- */
 export const Route = createRootRoute({
   head: () => ({
+    title: "HAKA.media — Premium Digital Strategy",
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Elegant Design Studio transforms user interfaces into a premium, elegant experience." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Elegant Design Studio transforms user interfaces into a premium, elegant experience." },
-      { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Lovable App" },
-      { name: "twitter:description", content: "Elegant Design Studio transforms user interfaces into a premium, elegant experience." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3c0c1885-2a4d-4568-8628-ff9d4b921d47/id-preview-70a0fc83--2a330df4-d3f3-49e8-ad20-2af0804f9624.lovable.app-1776919808570.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/3c0c1885-2a4d-4568-8628-ff9d4b921d47/id-preview-70a0fc83--2a330df4-d3f3-49e8-ad20-2af0804f9624.lovable.app-1776919808570.png" },
+      {
+        name: "description",
+        content:
+          "Private consultation with HAKA.media. Bespoke digital strategy, design, and development.",
+      },
+      {
+        property: "og:title",
+        content: "HAKA.media — Premium Digital Strategy",
+      },
+      {
+        property: "og:description",
+        content: "Bespoke digital strategy, design, and development crafted for premium brands.",
+      },
     ],
     links: [
       {
@@ -49,25 +54,25 @@ export const Route = createRootRoute({
       },
     ],
   }),
+
+  /* IMPORTANT: No <html> or <body> here */
   shellComponent: RootShell,
   component: RootComponent,
   notFoundComponent: NotFoundComponent,
 });
 
+/* ---------- SHELL ---------- */
 function RootShell({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
-      <head>
-        <HeadContent />
-      </head>
-      <body>
-        {children}
-        <Scripts />
-      </body>
-    </html>
+    <>
+      <HeadContent />
+      {children}
+      <Scripts />
+    </>
   );
 }
 
+/* ---------- MAIN OUTLET ---------- */
 function RootComponent() {
   return <Outlet />;
 }
