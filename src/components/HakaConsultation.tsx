@@ -1,6 +1,15 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
 
+// ─────────────────────────────────────────────────────────
+//  FORMSPREE SETUP
+//  1. Go to https://formspree.io → New Form → give it a name
+//  2. Copy your form endpoint — it looks like:
+//     https://formspree.io/f/xxxxxxxo
+//  3. Paste it below
+// ─────────────────────────────────────────────────────────
+const FORMSPREE_ENDPOINT = "https://formspree.io/f/xlgaoyro";
+
 type Step = "name" | "phone" | "email" | "location" | "services" | "summary" | "done";
 
 interface FormData {
@@ -41,6 +50,33 @@ interface Message {
   text: string;
 }
 
+// ── Formspree submission ──────────────────────────────────
+async function submitToFormspree(formData: FormData): Promise<{ ok: boolean }> {
+  try {
+    const res = await fetch(FORMSPREE_ENDPOINT, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      },
+      body: JSON.stringify({
+        name: formData.name,
+        phone: formData.phone,
+        email: formData.email,
+        location: formData.location,
+        services: formData.services.join(", "),
+        // Formspree uses _replyto to set the reply-to address in email notifications
+        _replyto: formData.email,
+        // Custom subject line in the notification email
+        _subject: `New Strategy Call Enquiry — ${formData.name}`,
+      }),
+    });
+    return { ok: res.ok };
+  } catch {
+    return { ok: false };
+  }
+}
+
 export function HakaConsultation() {
   const navigate = useNavigate();
 
@@ -49,7 +85,10 @@ export function HakaConsultation() {
   const [typing, setTyping] = useState(false);
   const [input, setInput] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
+
   const [data, setData] = useState<FormData>({
     name: "",
     phone: "",
@@ -92,7 +131,7 @@ export function HakaConsultation() {
 
   useEffect(() => {
     chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" });
-  }, [messages, typing]);
+  }, [messages, typing, submitting]);
 
   useEffect(() => {
     if (step !== "services" && step !== "summary") {
@@ -126,19 +165,34 @@ export function HakaConsultation() {
     }, 400);
   };
 
-  const finish = () => {
-    const firstName = data.name.split(" ")[0] || "";
-    navigate({ to: "/thank-you", search: { firstName, email: data.email } });
+  // ── Submit to Formspree, then navigate ──────────────────
+  const finish = async (finalData: FormData) => {
+    setSubmitting(true);
+    setSubmitError(false);
+
+    const { ok } = await submitToFormspree(finalData);
+
+    setSubmitting(false);
+
+    if (!ok) {
+      setSubmitError(true);
+      return;
+    }
+
+    const firstName = finalData.name.split(" ")[0] || "";
+    navigate({ to: "/thank-you", search: { firstName, email: finalData.email } });
   };
 
   const stepIndex = STEP_ORDER.indexOf(step);
   const chapterNum = String(stepIndex + 1).padStart(2, "0");
   const totalNum = String(STEP_ORDER.length).padStart(2, "0");
 
+  // ─────────────────────────────────────────────────────────
+  //  RENDER
+  // ─────────────────────────────────────────────────────────
   return (
     <div
       style={{
-        minHeight: "100vh",
         minHeight: "100dvh",
         display: "flex",
         flexDirection: isMobile ? "column" : "row",
@@ -168,6 +222,19 @@ export function HakaConsultation() {
         .tdot { animation: dotPulse 1.4s infinite ease-in-out; }
         .tdot:nth-child(2) { animation-delay: 0.2s; }
         .tdot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes spin {
+          to { transform: rotate(360deg); }
+        }
+        .spinner {
+          width: 12px; height: 12px;
+          border: 1px solid #3a3020;
+          border-top-color: #b89c6e;
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+          display: inline-block;
+          flex-shrink: 0;
+        }
 
         .svc-btn {
           background: transparent;
@@ -217,8 +284,13 @@ export function HakaConsultation() {
           width: 100%;
           margin-top: 10px;
           transition: opacity 0.2s;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
         }
-        .finish-btn:hover { opacity: 0.82; }
+        .finish-btn:hover:not(:disabled) { opacity: 0.82; }
+        .finish-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
         .input-field {
           background: transparent;
@@ -226,15 +298,13 @@ export function HakaConsultation() {
           outline: none;
           color: #c8c0b4;
           font-family: 'Cormorant Garamond', serif;
-          font-size: 18px;
+          font-size: max(16px, 18px);
           font-weight: 300;
           font-style: italic;
           letter-spacing: 0.5px;
           flex: 1;
           padding: 0;
           width: 100%;
-          /* Prevent iOS zoom on focus */
-          font-size: max(16px, 18px);
         }
         .input-field::placeholder { color: #2a2620; font-style: italic; }
 
@@ -265,13 +335,10 @@ export function HakaConsultation() {
         .atelier-item:hover { color: #5a5040; }
       `}</style>
 
-      {/* ═══════════════════════════════════════
-          LEFT PANEL
-          Desktop: fixed 38% column
-          Mobile: compact top header bar
-      ═══════════════════════════════════════ */}
+      {/* ═══════════════════════════════
+          LEFT / MOBILE HEADER
+      ═══════════════════════════════ */}
       {isMobile ? (
-        /* ── MOBILE TOP HEADER ── */
         <div
           style={{
             borderBottom: "1px solid #131008",
@@ -282,7 +349,6 @@ export function HakaConsultation() {
             flexShrink: 0,
           }}
         >
-          {/* Wordmark */}
           <div>
             <div
               style={{
@@ -308,8 +374,6 @@ export function HakaConsultation() {
               Private Consultation
             </div>
           </div>
-
-          {/* Chapter counter */}
           <div style={{ textAlign: "right" }}>
             <div
               style={{
@@ -338,7 +402,6 @@ export function HakaConsultation() {
           </div>
         </div>
       ) : (
-        /* ── DESKTOP LEFT PANEL ── */
         <div
           style={{
             width: "38%",
@@ -376,7 +439,6 @@ export function HakaConsultation() {
           <div
             style={{ width: "36px", height: "1px", background: "#2a2418", margin: "18px 0 0" }}
           />
-
           <div style={{ marginTop: "auto", paddingBottom: "28px" }}>
             <p
               style={{
@@ -407,7 +469,6 @@ export function HakaConsultation() {
               </span>
             </div>
           </div>
-
           <div style={{ borderTop: "1px solid #131008", paddingTop: "22px" }}>
             <div
               style={{
@@ -438,7 +499,6 @@ export function HakaConsultation() {
               </div>
             </div>
           </div>
-
           <div
             style={{
               display: "flex",
@@ -463,9 +523,9 @@ export function HakaConsultation() {
         </div>
       )}
 
-      {/* ═══════════════════════════════════════
+      {/* ═══════════════════════════════
           RIGHT PANEL — conversation
-      ═══════════════════════════════════════ */}
+      ═══════════════════════════════ */}
       <div
         style={{
           flex: 1,
@@ -475,72 +535,70 @@ export function HakaConsultation() {
           overflow: isMobile ? "hidden" : undefined,
         }}
       >
-        {/* Desktop right header (hidden on mobile — merged into top bar above) */}
+        {/* Desktop right header */}
         {!isMobile && (
-          <>
-            <div
-              style={{
-                borderBottom: "1px solid #131008",
-                padding: "36px 48px 28px",
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "flex-start",
-              }}
-            >
-              <div>
-                <div
-                  style={{
-                    fontSize: "9px",
-                    letterSpacing: "4px",
-                    textTransform: "uppercase",
-                    color: "#b89c6e",
-                    marginBottom: "6px",
-                  }}
-                >
-                  Private Consultation
-                </div>
-                <div
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "13px",
-                    fontStyle: "italic",
-                    color: "#3a3020",
-                  }}
-                >
-                  By invitation · In confidence
-                </div>
-                <div
-                  style={{ width: "40px", height: "1px", background: "#1a1610", marginTop: "14px" }}
-                />
+          <div
+            style={{
+              borderBottom: "1px solid #131008",
+              padding: "36px 48px 28px",
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: "9px",
+                  letterSpacing: "4px",
+                  textTransform: "uppercase",
+                  color: "#b89c6e",
+                  marginBottom: "6px",
+                }}
+              >
+                Private Consultation
               </div>
-              <div style={{ textAlign: "right" }}>
-                <div
-                  style={{
-                    fontSize: "8px",
-                    letterSpacing: "3px",
-                    textTransform: "uppercase",
-                    color: "#2a2418",
-                    marginBottom: "5px",
-                  }}
-                >
-                  Chapter
-                </div>
-                <div
-                  style={{
-                    fontFamily: "'Cormorant Garamond', serif",
-                    fontSize: "30px",
-                    fontWeight: 300,
-                    color: "#4a4030",
-                    lineHeight: 1,
-                  }}
-                >
-                  {chapterNum}
-                  <span style={{ fontSize: "16px", color: "#2a2018", margin: "0 6px" }}>/</span>
-                  <span style={{ fontSize: "16px", color: "#2a2018" }}>{totalNum}</span>
-                </div>
+              <div
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "13px",
+                  fontStyle: "italic",
+                  color: "#3a3020",
+                }}
+              >
+                By invitation · In confidence
+              </div>
+              <div
+                style={{ width: "40px", height: "1px", background: "#1a1610", marginTop: "14px" }}
+              />
+            </div>
+            <div style={{ textAlign: "right" }}>
+              <div
+                style={{
+                  fontSize: "8px",
+                  letterSpacing: "3px",
+                  textTransform: "uppercase",
+                  color: "#2a2418",
+                  marginBottom: "5px",
+                }}
+              >
+                Chapter
+              </div>
+              <div
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "30px",
+                  fontWeight: 300,
+                  color: "#4a4030",
+                  lineHeight: 1,
+                }}
+              >
+                {chapterNum}
+                <span style={{ fontSize: "16px", color: "#2a2018", margin: "0 6px" }}>/</span>
+                <span style={{ fontSize: "16px", color: "#2a2018" }}>{totalNum}</span>
               </div>
             </div>
-          </>
+          </div>
         )}
 
         {/* Step pips */}
@@ -567,7 +625,7 @@ export function HakaConsultation() {
           ))}
         </div>
 
-        {/* Chat scroll area */}
+        {/* Chat area */}
         <div
           ref={chatRef}
           className="no-scroll"
@@ -862,13 +920,41 @@ export function HakaConsultation() {
                 </div>
               </div>
 
-              <button className="finish-btn" onClick={finish}>
-                Confirm &amp; Connect
+              {/* Error message */}
+              {submitError && (
+                <div
+                  style={{
+                    marginTop: "12px",
+                    fontSize: "10px",
+                    letterSpacing: "1.5px",
+                    color: "#8a4a3a",
+                    textTransform: "uppercase",
+                    textAlign: "center",
+                  }}
+                >
+                  Submission failed — please try again or email us directly.
+                </div>
+              )}
+
+              {/* Confirm & Connect button */}
+              <button className="finish-btn" onClick={() => finish(data)} disabled={submitting}>
+                {submitting ? (
+                  <>
+                    <span
+                      className="spinner"
+                      style={{ borderColor: "#3a2e1e", borderTopColor: "#0a0906" }}
+                    />
+                    Sending...
+                  </>
+                ) : submitError ? (
+                  "Retry →"
+                ) : (
+                  "Confirm & Connect"
+                )}
               </button>
             </div>
           )}
 
-          {/* Bottom padding so last message isn't hidden by input bar */}
           <div style={{ height: "8px", flexShrink: 0 }} />
         </div>
 
@@ -943,7 +1029,6 @@ export function HakaConsultation() {
           </div>
         )}
 
-        {/* Mobile bottom safe area */}
         {isMobile && (
           <div
             style={{
