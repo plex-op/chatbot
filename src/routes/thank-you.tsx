@@ -32,8 +32,18 @@ function ThankYouPage() {
 
   // Entry animation
   useEffect(() => {
-    const enterTimer = setTimeout(() => setVisible(true), 100);
-    return () => clearTimeout(enterTimer);
+    if (!pixelFired.current && typeof window !== "undefined" && window.fbq) {
+      // Standard Lead event
+      window.fbq("track", "Lead", {
+        content_name: "HAKA Media Form",
+        status: "submitted",
+      });
+
+      // Custom SubmitApplication event
+      window.fbq("track", "SubmitApplication");
+
+      pixelFired.current = true;
+    }
   }, []);
 
   // ✅ META PIXEL LEAD EVENT
