@@ -91,7 +91,7 @@ function ThankYouPage() {
             top: 0,
             left: 0,
             height: "100%",
-            background: "#D4AF6A",
+            background: "#FFFFFF",
             width: "100%",
             animation: "countShrink 10s linear forwards",
           }}
@@ -108,7 +108,7 @@ function ThankYouPage() {
             letterSpacing: "6px",
           }}
         >
-          HAKA<span style={{ color: "#D4AF6A" }}>.</span>media
+          HAKA<span style={{ color: "#FFFFFF" }}>.</span>media
         </div>
       </header>
 
@@ -133,7 +133,7 @@ function ThankYouPage() {
         >
           Thank you,
           <br />
-          <span style={{ color: "#D4AF6A" }}>{firstName}.</span>
+          <span style={{ color: "#FFFFFF" }}>{firstName}.</span>
         </h1>
 
         <p style={{ marginTop: "20px", color: "#555" }}>

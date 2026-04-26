@@ -196,8 +196,8 @@ export function HakaConsultation() {
         minHeight: "100dvh",
         display: "flex",
         flexDirection: isMobile ? "column" : "row",
-        background: "#0B0A08",
-        color: "#EDE6DA",
+        background: "#141414",
+        color: "#FAFAFA",
         fontFamily: "'Jost', sans-serif",
         fontWeight: 300,
         overflow: "hidden",
@@ -228,8 +228,8 @@ export function HakaConsultation() {
         }
         .spinner {
           width: 12px; height: 12px;
-          border: 1px solid #3a3020;
-          border-top-color: #D4AF6A;
+          border: 1px solid #A0A0A0;
+          border-top-color: #FFFFFF;
           border-radius: 50%;
           animation: spin 0.8s linear infinite;
           display: inline-block;
@@ -251,13 +251,13 @@ export function HakaConsultation() {
           white-space: nowrap;
         }
         .svc-btn:hover { border-color: #3a3630; color: #888; }
-        .svc-btn.on { border-color: #D4AF6A; color: #D4AF6A; background: rgba(184,156,110,0.04); }
+        .svc-btn.on { border-color: #FFFFFF; color: #FFFFFF; background: rgba(184,156,110,0.04); }
 
         .confirm-btn {
           background: none;
           border: none;
-          border-bottom: 1px solid #D4AF6A;
-          color: #D4AF6A;
+          border-bottom: 1px solid #FFFFFF;
+          color: #FFFFFF;
           font-family: 'Jost', sans-serif;
           font-size: 10px;
           font-weight: 300;
@@ -271,7 +271,7 @@ export function HakaConsultation() {
         .confirm-btn:disabled { opacity: 0.18; cursor: default; }
 
         .finish-btn {
-          background: #D4AF6A;
+          background: #FFFFFF;
           border: none;
           color: #0a0906;
           font-family: 'Jost', sans-serif;
@@ -296,7 +296,7 @@ export function HakaConsultation() {
           background: transparent;
           border: none;
           outline: none;
-          color: #F5EFE6;
+          color: #FAFAFA;
           font-family: 'Cormorant Garamond', serif;
           font-size: max(16px, 18px);
           font-weight: 300;
@@ -306,12 +306,12 @@ export function HakaConsultation() {
           padding: 0;
           width: 100%;
         }
-        .input-field::placeholder { color: #6B5E49; font-style: italic; }
+        .input-field::placeholder { color: #808080; font-style: italic; }
 
         .send-btn {
           background: transparent;
           border: none;
-          color: #6B5E49;
+          color: #808080;
           font-family: 'Jost', sans-serif;
           font-size: 9px;
           font-weight: 300;
@@ -322,13 +322,13 @@ export function HakaConsultation() {
           transition: color 0.2s;
           flex-shrink: 0;
         }
-        .send-btn:hover { color: #D4AF6A; }
+        .send-btn:hover { color: #FFFFFF; }
 
         .atelier-item {
           font-size: 9px;
           letter-spacing: 3px;
           text-transform: uppercase;
-          color: #6B5E49;
+          color: #808080;
           line-height: 2.4;
           transition: color 0.2s;
         }
@@ -341,7 +341,7 @@ export function HakaConsultation() {
       {isMobile ? (
         <div
           style={{
-            borderBottom: "1px solid #131008",
+            borderBottom: "1px solid #2A2A2A",
             padding: "20px 24px 16px",
             display: "flex",
             alignItems: "center",
@@ -352,26 +352,44 @@ export function HakaConsultation() {
           <div>
             <div
               style={{
-                fontFamily: "'Cormorant Garamond', serif",
-                fontSize: "24px",
-                fontWeight: 400,
-                color: "#ede5d8",
-                letterSpacing: "1px",
-                lineHeight: 1,
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
               }}
             >
-              Haka<span style={{ color: "#D4AF6A" }}>.</span>media
+              <img
+                src="/white-haka.png"
+                alt="Haka"
+                style={{
+                  height: "28px",
+                  width: "28px",
+                  objectFit: "contain",
+                }}
+              />
+
+              <div
+                style={{
+                  fontFamily: "'Cormorant Garamond', serif",
+                  fontSize: "22px",
+                  fontWeight: 400,
+                  color: "#FAFAFA",
+                  letterSpacing: "1px",
+                  lineHeight: 1,
+                }}
+              >
+                Haka.media
+              </div>
             </div>
             <div
               style={{
                 fontSize: "8px",
                 letterSpacing: "3px",
                 textTransform: "uppercase",
-                color: "#6B5E49",
+                color: "#808080",
                 marginTop: "4px",
               }}
             >
-              Private Consultation
+              Fining the Digital Gap
             </div>
           </div>
           <div style={{ textAlign: "right" }}>
@@ -380,7 +398,7 @@ export function HakaConsultation() {
                 fontSize: "8px",
                 letterSpacing: "2.5px",
                 textTransform: "uppercase",
-                color: "#6B5E49",
+                color: "#808080",
                 marginBottom: "3px",
               }}
             >
@@ -391,13 +409,13 @@ export function HakaConsultation() {
                 fontFamily: "'Cormorant Garamond', serif",
                 fontSize: "22px",
                 fontWeight: 300,
-                color: "#4a4030",
+                color: "#C0C0C0",
                 lineHeight: 1,
               }}
             >
               {chapterNum}
-              <span style={{ fontSize: "13px", color: "#2a2018", margin: "0 4px" }}>/</span>
-              <span style={{ fontSize: "13px", color: "#2a2018" }}>{totalNum}</span>
+              <span style={{ fontSize: "13px", color: "#606060", margin: "0 4px" }}>/</span>
+              <span style={{ fontSize: "13px", color: "#606060" }}>{totalNum}</span>
             </div>
           </div>
         </div>
@@ -406,7 +424,7 @@ export function HakaConsultation() {
           style={{
             width: "38%",
             minHeight: "100vh",
-            borderRight: "1px solid #131008",
+            borderRight: "1px solid #2A2A2A",
             display: "flex",
             flexDirection: "column",
             padding: "36px 40px",
@@ -434,7 +452,7 @@ export function HakaConsultation() {
               letterSpacing: "1px",
             }}
           >
-            Haka<span style={{ color: "#D4AF6A" }}>.</span>media
+            Haka<span style={{ color: "#FFFFFF" }}>.</span>media
           </div>
           <div
             style={{ width: "36px", height: "1px", background: "#2a2418", margin: "18px 0 0" }}
@@ -453,7 +471,7 @@ export function HakaConsultation() {
             >
               "We don't build campaigns.
               <br />
-              We compose <span style={{ color: "#D4AF6A" }}>legacies.</span>"
+              We compose <span style={{ color: "#FFFFFF" }}>legacies.</span>"
             </p>
             <div style={{ display: "flex", alignItems: "center", gap: "14px", marginTop: "24px" }}>
               <div style={{ width: "40px", height: "1px", background: "#2a2418" }} />
@@ -462,14 +480,14 @@ export function HakaConsultation() {
                   fontSize: "8px",
                   letterSpacing: "4px",
                   textTransform: "uppercase",
-                  color: "#6B5E49",
+                  color: "#808080",
                 }}
               >
                 The House of Haka
               </span>
             </div>
           </div>
-          <div style={{ borderTop: "1px solid #131008", paddingTop: "22px" }}>
+          <div style={{ borderTop: "1px solid #2A2A2A", paddingTop: "22px" }}>
             <div
               style={{
                 fontSize: "8px",
@@ -505,7 +523,7 @@ export function HakaConsultation() {
               justifyContent: "space-between",
               marginTop: "20px",
               paddingTop: "14px",
-              borderTop: "1px solid #131008",
+              borderTop: "1px solid #2A2A2A",
             }}
           >
             <span
@@ -513,12 +531,12 @@ export function HakaConsultation() {
                 fontSize: "8px",
                 letterSpacing: "2.5px",
                 textTransform: "uppercase",
-                color: "#1a1610",
+                color: "#404040",
               }}
             >
               Established Excellence
             </span>
-            <span style={{ fontSize: "8px", letterSpacing: "2px", color: "#1a1610" }}>MMXXIV</span>
+            <span style={{ fontSize: "8px", letterSpacing: "2px", color: "#404040" }}>MMXXIV</span>
           </div>
         </div>
       )}
@@ -539,7 +557,7 @@ export function HakaConsultation() {
         {!isMobile && (
           <div
             style={{
-              borderBottom: "1px solid #131008",
+              borderBottom: "1px solid #2A2A2A",
               padding: "36px 48px 28px",
               display: "flex",
               justifyContent: "space-between",
@@ -552,7 +570,7 @@ export function HakaConsultation() {
                   fontSize: "9px",
                   letterSpacing: "4px",
                   textTransform: "uppercase",
-                  color: "#D4AF6A",
+                  color: "#FFFFFF",
                   marginBottom: "6px",
                 }}
               >
@@ -563,13 +581,13 @@ export function HakaConsultation() {
                   fontFamily: "'Cormorant Garamond', serif",
                   fontSize: "13px",
                   fontStyle: "italic",
-                  color: "#3a3020",
+                  color: "#A0A0A0",
                 }}
               >
                 By invitation · In confidence
               </div>
               <div
-                style={{ width: "40px", height: "1px", background: "#1a1610", marginTop: "14px" }}
+                style={{ width: "40px", height: "1px", background: "#404040", marginTop: "14px" }}
               />
             </div>
             <div style={{ textAlign: "right" }}>
@@ -578,7 +596,7 @@ export function HakaConsultation() {
                   fontSize: "8px",
                   letterSpacing: "3px",
                   textTransform: "uppercase",
-                  color: "#6B5E49",
+                  color: "#808080",
                   marginBottom: "5px",
                 }}
               >
@@ -589,13 +607,13 @@ export function HakaConsultation() {
                   fontFamily: "'Cormorant Garamond', serif",
                   fontSize: "30px",
                   fontWeight: 300,
-                  color: "#4a4030",
+                  color: "#C0C0C0",
                   lineHeight: 1,
                 }}
               >
                 {chapterNum}
-                <span style={{ fontSize: "16px", color: "#2a2018", margin: "0 6px" }}>/</span>
-                <span style={{ fontSize: "16px", color: "#2a2018" }}>{totalNum}</span>
+                <span style={{ fontSize: "16px", color: "#606060", margin: "0 6px" }}>/</span>
+                <span style={{ fontSize: "16px", color: "#606060" }}>{totalNum}</span>
               </div>
             </div>
           </div>
@@ -607,7 +625,7 @@ export function HakaConsultation() {
             display: "flex",
             padding: isMobile ? "0 24px" : "0 48px",
             gap: "3px",
-            borderBottom: "1px solid #0e0c08",
+            borderBottom: "1px solid #1A1A1A",
             flexShrink: 0,
           }}
         >
@@ -617,7 +635,7 @@ export function HakaConsultation() {
               style={{
                 flex: 1,
                 height: "2px",
-                background: i < stepIndex ? "#2e2820" : i === stepIndex ? "#D4AF6A" : "#131008",
+                background: i < stepIndex ? "#2e2820" : i === stepIndex ? "#FFFFFF" : "#2A2A2A",
                 transition: "background 0.5s ease",
                 marginBottom: "-1px",
               }}
@@ -659,7 +677,7 @@ export function HakaConsultation() {
                         width: "5px",
                         height: "5px",
                         borderRadius: "50%",
-                        background: "#D4AF6A",
+                        background: "#FFFFFF",
                         flexShrink: 0,
                       }}
                     />
@@ -668,7 +686,7 @@ export function HakaConsultation() {
                         fontSize: "8px",
                         letterSpacing: "3.5px",
                         textTransform: "uppercase",
-                        color: "#3a3020",
+                        color: "#A0A0A0",
                       }}
                     >
                       Haka
@@ -679,7 +697,7 @@ export function HakaConsultation() {
                       fontFamily: "'Cormorant Garamond', serif",
                       fontSize: isMobile ? "24px" : "clamp(22px, 2.4vw, 30px)",
                       fontWeight: 300,
-                      color: "#F5EFE6",
+                      color: "gold",
                       textShadow: "0 0 20px rgba(212,175,106,0.08)",
                       lineHeight: 1.35,
                       maxWidth: isMobile ? "100%" : "500px",
@@ -695,7 +713,7 @@ export function HakaConsultation() {
                       fontSize: "8px",
                       letterSpacing: "3.5px",
                       textTransform: "uppercase",
-                      color: "#6B5E49",
+                      color: "#808080",
                       marginBottom: "7px",
                     }}
                   >
@@ -704,10 +722,10 @@ export function HakaConsultation() {
                   <p
                     style={{
                       fontFamily: "'Cormorant Garamond', serif",
-                      fontSize: "16px",
+                      fontSize: "26px",
                       fontStyle: "italic",
                       fontWeight: 300,
-                      color: "#B8AD9A",
+                      color: "#ffffff",
                       lineHeight: 1.5,
                     }}
                   >
@@ -729,7 +747,7 @@ export function HakaConsultation() {
                     width: "5px",
                     height: "5px",
                     borderRadius: "50%",
-                    background: "#D4AF6A",
+                    background: "#FFFFFF",
                   }}
                 />
                 <span
@@ -752,7 +770,7 @@ export function HakaConsultation() {
                       width: "4px",
                       height: "4px",
                       borderRadius: "50%",
-                      background: "#3a3020",
+                      background: "#A0A0A0",
                       animationDelay: `${i * 0.2}s`,
                     }}
                   />
@@ -798,7 +816,7 @@ export function HakaConsultation() {
             <div
               className="msg-rise"
               style={{
-                border: "1px solid #181410",
+                border: "1px solid #2A2A2A",
                 padding: isMobile ? "22px 20px" : "28px 32px",
                 maxWidth: isMobile ? "100%" : "460px",
                 position: "relative",
@@ -810,26 +828,26 @@ export function HakaConsultation() {
                   {
                     top: -1,
                     left: -1,
-                    borderTop: "1px solid #3a3020",
-                    borderLeft: "1px solid #3a3020",
+                    borderTop: "1px solid #A0A0A0",
+                    borderLeft: "1px solid #A0A0A0",
                   },
                   {
                     top: -1,
                     right: -1,
-                    borderTop: "1px solid #3a3020",
-                    borderRight: "1px solid #3a3020",
+                    borderTop: "1px solid #A0A0A0",
+                    borderRight: "1px solid #A0A0A0",
                   },
                   {
                     bottom: -1,
                     left: -1,
-                    borderBottom: "1px solid #3a3020",
-                    borderLeft: "1px solid #3a3020",
+                    borderBottom: "1px solid #A0A0A0",
+                    borderLeft: "1px solid #A0A0A0",
                   },
                   {
                     bottom: -1,
                     right: -1,
-                    borderBottom: "1px solid #3a3020",
-                    borderRight: "1px solid #3a3020",
+                    borderBottom: "1px solid #A0A0A0",
+                    borderRight: "1px solid #A0A0A0",
                   },
                 ] as React.CSSProperties[]
               ).map((s, i) => (
@@ -841,7 +859,7 @@ export function HakaConsultation() {
                   fontSize: "8px",
                   letterSpacing: "4px",
                   textTransform: "uppercase",
-                  color: "#D4AF6A",
+                  color: "#FFFFFF",
                   marginBottom: "20px",
                 }}
               >
@@ -861,7 +879,7 @@ export function HakaConsultation() {
                     alignItems: "baseline",
                     gap: "12px",
                     padding: "9px 0",
-                    borderBottom: "1px solid #0e0c08",
+                    borderBottom: "1px solid #1A1A1A",
                   }}
                 >
                   <span
@@ -890,7 +908,7 @@ export function HakaConsultation() {
                 </div>
               ))}
 
-              <div style={{ padding: "10px 0", borderBottom: "1px solid #0e0c08" }}>
+              <div style={{ padding: "10px 0", borderBottom: "1px solid #1A1A1A" }}>
                 <div
                   style={{
                     fontSize: "8px",
@@ -908,7 +926,7 @@ export function HakaConsultation() {
                       key={s}
                       style={{
                         border: "1px solid #1e1a14",
-                        color: "#4a4030",
+                        color: "#C0C0C0",
                         fontSize: "8px",
                         letterSpacing: "2px",
                         textTransform: "uppercase",
@@ -963,7 +981,7 @@ export function HakaConsultation() {
         {step !== "services" && step !== "summary" && (
           <div
             style={{
-              borderTop: "1px solid #0e0c08",
+              borderTop: "1px solid #1A1A1A",
               padding: isMobile ? "0 24px" : "0 48px",
               flexShrink: 0,
               background: "#0a0906",
@@ -983,12 +1001,12 @@ export function HakaConsultation() {
                   alignItems: "center",
                   gap: "16px",
                   padding: "18px 0 16px",
-                  borderBottom: "1px solid #131008",
+                  borderBottom: "1px solid #2A2A2A",
                 }}
               >
                 <span
                   style={{
-                    color: "#2e2820",
+                    color: "#ffffff",
                     fontSize: "16px",
                     fontFamily: "'Cormorant Garamond', serif",
                     flexShrink: 0,
@@ -1019,7 +1037,7 @@ export function HakaConsultation() {
                       fontSize: "8px",
                       letterSpacing: "3px",
                       textTransform: "uppercase",
-                      color: "#1a1610",
+                      color: "#ffffff",
                     }}
                   >
                     Press Enter to Continue
